@@ -3,14 +3,22 @@ package com.romanvoytyuk.shoplist.data
 import com.romanvoytyuk.shoplist.domain.ShopItem
 import com.romanvoytyuk.shoplist.domain.ShopListRepository
 
-class ShopListRepositoryImp() : ShopListRepository {
+object ShopListRepositoryImp : ShopListRepository {
 
     private val shopItemList = mutableListOf<ShopItem>()
     private var autoIncrementId = 0
 
+    init {
+        repeat(10) {
+            addShopItem(ShopItem("name$it", it, true))
+        }
+    }
+
     override fun getShopItem(id: Int): ShopItem {
         return shopItemList.find { it.id == id } ?: throw RuntimeException("wrong id")
     }
+
+
 
     override fun deleteShopItem(shopItem: ShopItem) {
         shopItemList.remove(shopItem)
