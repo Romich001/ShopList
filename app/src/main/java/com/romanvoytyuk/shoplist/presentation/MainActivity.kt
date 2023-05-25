@@ -1,6 +1,7 @@
 package com.romanvoytyuk.shoplist.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +37,13 @@ class MainActivity : AppCompatActivity() {
                 R.layout.disenable_shop_item,
                 ShopListAdapter.MAX_POOL_SIZE
             )
+
+        }
+        shopListAdapter.shopItemLongClick = {
+            viewModel.changeEnableState(it)
+        }
+        shopListAdapter.shopItemClick = {
+            Log.d("ClickListener", "Shop item name: ${it.name} price: ${it.price}")
         }
 
     }
