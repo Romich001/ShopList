@@ -1,5 +1,7 @@
 package com.romanvoytyuk.shoplist.presentation
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.romanvoytyuk.shoplist.data.ShopListRepositoryImp
 import com.romanvoytyuk.shoplist.domain.AddShopItemUsageCase
@@ -16,6 +18,23 @@ class ShopItemViewModel : ViewModel() {
     private val editShopItemUsageCase = EditShopItemUsageCase(repository)
     private val getShopItemUsageCase = GetShopItemUsageCase(repository)
 
+    private val _errorInputName = MutableLiveData<Boolean>()
+    private val _errorInputPrice = MutableLiveData<Boolean>()
+    private val _shopItem = MutableLiveData<ShopItem>()
+    private val _shouldCloseScreen = MutableLiveData<Unit>()
+
+
+    val shouldCloseScreen: LiveData<Unit>
+        get() = _shouldCloseScreen
+    val shopItem: LiveData<ShopItem>
+        get() = _shopItem
+    val errorInputName: LiveData<Boolean>
+        get() = _errorInputName
+    val errorInputPrice: LiveData<Boolean>
+        get() = _errorInputPrice
+
+
+
     fun addShopItem(inputName: String?, inputPrice: String?) {
         val name = parsName(inputName)
         val price = parsPrice(inputPrice)
@@ -23,7 +42,7 @@ class ShopItemViewModel : ViewModel() {
         if (fieldsValid) {
             val shopItem = ShopItem(name, price, true)
             addShopItemUsageCase.addShopItem(shopItem)
-
+            finishWork()
         }
 
     }
@@ -33,14 +52,18 @@ class ShopItemViewModel : ViewModel() {
         val price = parsPrice(inputPrice)
         val fieldsValid = validateInput(name, price)
         if (fieldsValid) {
-            val shopItem = ShopItem(name, price, true)
-            editShopItemUsageCase.editShopItem(shopItem)
+            _shopItem.value?.let {
+                val item = it.copy(name = name, price = price)
+                editShopItemUsageCase.editShopItem(item)
+                finishWork()
+            }
 
         }
     }
 
     fun getShopItem(shopItemId: Int) {
         val item = getShopItemUsageCase.getShopItem(shopItemId)
+        _shopItem.value = item
     }
 
     private fun parsName(inputName: String?): String {
@@ -59,14 +82,25 @@ class ShopItemViewModel : ViewModel() {
         var result = true
 
         if (name.isBlank()) {
-            //TODO: show error input name
+            _errorInputName.value = true
             result = false
         }
 
         if (price <= 0) {
-            //TODO: show error input price
+            _errorInputPrice.value = true
             result = false
         }
         return result
+    }
+
+    private fun resetErrorInputName() {
+        _errorInputName.value = false
+    }
+    private fun resetErrorPriceName() {
+        _errorInputPrice.value = false
+    }
+
+    private fun finishWork() {
+        _shouldCloseScreen.value = Unit
     }
 }
