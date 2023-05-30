@@ -15,7 +15,7 @@ import com.romanvoytyuk.shoplist.domain.ShopItem
 
 class ShopItemActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: ShopItemViewModel
+   /* private lateinit var viewModel: ShopItemViewModel
 
     private lateinit var tilName: TextInputLayout
     private lateinit var tilPrice: TextInputLayout
@@ -24,18 +24,19 @@ class ShopItemActivity : AppCompatActivity() {
     private lateinit var buttonSave: Button
 
     private var screenMode = UNKNOWN_MODE
-    private var shopItemId = ShopItem.UNDEFINED_ID
+    private var shopItemId = ShopItem.UNDEFINED_ID*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.shop_item_activity)
-        parsIntent()
+       /* parsIntent()
         initViews()
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         observeViewModel()
         setTextChangeListeners()
-        setScreenMode()
+        setScreenMode()*/
     }
+/*
 
     private fun setScreenMode() {
         when (screenMode) {
@@ -136,6 +137,7 @@ class ShopItemActivity : AppCompatActivity() {
         etPrice = findViewById(R.id.item_price_input_field)
         buttonSave = findViewById(R.id.buttonSave)
     }
+*/
 
     companion object {
         private const val EXTRA_SCREEN_MODE = "extra_mode"
