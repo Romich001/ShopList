@@ -34,7 +34,6 @@ class ShopItemViewModel : ViewModel() {
         get() = _errorInputPrice
 
 
-
     fun addShopItem(inputName: String?, inputPrice: String?) {
         val name = parsName(inputName)
         val price = parsPrice(inputPrice)
@@ -93,10 +92,11 @@ class ShopItemViewModel : ViewModel() {
         return result
     }
 
-    private fun resetErrorInputName() {
+    fun resetErrorInputName() {
         _errorInputName.value = false
     }
-    private fun resetErrorPriceName() {
+
+    fun resetErrorInputPrice() {
         _errorInputPrice.value = false
     }
 
