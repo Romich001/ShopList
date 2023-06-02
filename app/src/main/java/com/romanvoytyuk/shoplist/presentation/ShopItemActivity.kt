@@ -33,9 +33,13 @@ class ShopItemActivity : AppCompatActivity() {
             MODE_ADD -> ShopItemFragment.newInstanceAddItem()
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
-        supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container, fragment)
-            .commit()
+        supportFragmentManager.apply {
+            popBackStack()
+            beginTransaction()
+                .replace(R.id.shop_item_container, fragment)
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     private fun parsIntent() {
