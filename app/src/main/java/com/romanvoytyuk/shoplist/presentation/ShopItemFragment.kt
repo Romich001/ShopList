@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import com.romanvoytyuk.shoplist.R
@@ -52,6 +53,8 @@ class ShopItemFragment(
         setTextChangeListeners()
         setScreenMode()
     }
+
+
 
     private fun setScreenMode() {
         when (screenMode) {
@@ -153,6 +156,7 @@ class ShopItemFragment(
         etPrice = view.findViewById(R.id.item_price_input_field)
         buttonSave = view.findViewById(R.id.buttonSave)
     }
+
 
 
     companion object {
