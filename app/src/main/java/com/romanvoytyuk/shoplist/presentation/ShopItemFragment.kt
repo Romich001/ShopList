@@ -1,7 +1,6 @@
 package com.romanvoytyuk.shoplist.presentation
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,17 +10,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import com.romanvoytyuk.shoplist.R
 import com.romanvoytyuk.shoplist.domain.ShopItem
 
-class ShopItemFragment(
-
-) : Fragment() {
+class ShopItemFragment : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
     private lateinit var tilName: TextInputLayout
     private lateinit var tilPrice: TextInputLayout
@@ -31,6 +28,15 @@ class ShopItemFragment(
 
     private var screenMode: String = UNKNOWN_MODE
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        } else {
+            throw RuntimeException("Activity should implement OnEditingFinishedListener")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +59,6 @@ class ShopItemFragment(
         setTextChangeListeners()
         setScreenMode()
     }
-
 
 
     private fun setScreenMode() {
@@ -96,7 +101,7 @@ class ShopItemFragment(
 
     private fun observeViewModel() {
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onEditingFinishedListener.onEditingFinished()
         }
         viewModel.errorInputName.observe(viewLifecycleOwner) {
             tilName.error = if (it) "Wrong name" else null
@@ -157,6 +162,9 @@ class ShopItemFragment(
         buttonSave = view.findViewById(R.id.buttonSave)
     }
 
+    interface OnEditingFinishedListener {
+        fun onEditingFinished()
+    }
 
 
     companion object {

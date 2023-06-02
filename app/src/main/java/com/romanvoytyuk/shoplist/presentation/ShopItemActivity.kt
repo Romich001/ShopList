@@ -4,10 +4,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import com.romanvoytyuk.shoplist.R
 import com.romanvoytyuk.shoplist.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
 
     private var screenMode = UNKNOWN_MODE
@@ -18,7 +19,7 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.shop_item_activity)
         parsIntent()
-        if(savedInstanceState == null ) {
+        if (savedInstanceState == null) {
             launchRightMode()
         }
 
@@ -54,6 +55,7 @@ class ShopItemActivity : AppCompatActivity() {
         }
 
     }
+
     companion object {
         private const val EXTRA_SCREEN_MODE = "extra_mode"
         private const val MODE_EDIT = "edit_mode"
@@ -77,6 +79,10 @@ class ShopItemActivity : AppCompatActivity() {
 
     }
 
+    override fun onEditingFinished() {
+        Toast.makeText(this, "succ", Toast.LENGTH_LONG).show()
+        finish()
+    }
 
 
 }
