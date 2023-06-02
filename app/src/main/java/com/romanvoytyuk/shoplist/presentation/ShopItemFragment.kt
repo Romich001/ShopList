@@ -17,8 +17,7 @@ import com.romanvoytyuk.shoplist.R
 import com.romanvoytyuk.shoplist.domain.ShopItem
 
 class ShopItemFragment(
-    private val screenMode: String = UNKNOWN_MODE,
-    private val shopItemId: Int = ShopItem.UNDEFINED_ID
+
 ) : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
@@ -29,6 +28,14 @@ class ShopItemFragment(
     private lateinit var etPrice: EditText
     private lateinit var buttonSave: Button
 
+    private var screenMode: String = UNKNOWN_MODE
+    private var shopItemId: Int = ShopItem.UNDEFINED_ID
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parsParams()
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -38,7 +45,7 @@ class ShopItemFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parsParams()
+
         initViews(view)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         observeViewModel()
@@ -84,7 +91,7 @@ class ShopItemFragment(
         })
     }
 
-    private fun  observeViewModel() {
+    private fun observeViewModel() {
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
             activity?.onBackPressed()
         }
@@ -119,11 +126,21 @@ class ShopItemFragment(
     }
 
     private fun parsParams() {
-        if (screenMode != MODE_ADD && screenMode != MODE_EDIT) {
+        val args = requireArguments()
+        if (!args.containsKey(SCREEN_MODE)) {
+            throw RuntimeException("No SCREEN_MODE presents")
+        }
+        val mode = args.getString(SCREEN_MODE)
+        if (mode != MODE_ADD && mode != MODE_EDIT) {
             throw RuntimeException("Unknown screen mode $screenMode")
         }
-        if (screenMode == MODE_EDIT && shopItemId == ShopItem.UNDEFINED_ID) {
-            throw RuntimeException("Wrong shop item id")
+        screenMode = mode
+        if (screenMode == MODE_EDIT) {
+
+            if (!args.containsKey(SHOP_ITEM_ID)) {
+                throw RuntimeException("Param shop item id is absent")
+            }
+            shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
 
 
@@ -139,33 +156,26 @@ class ShopItemFragment(
 
 
     companion object {
-        private const val EXTRA_SCREEN_MODE = "extra_mode"
+        private const val SCREEN_MODE = "extra_mode"
         private const val MODE_EDIT = "edit_mode"
         private const val MODE_ADD = "add_mode"
-        private const val EXTRA_SHOP_ITEM_ID = "extra_shop_item_id"
+        private const val SHOP_ITEM_ID = "extra_shop_item_id"
         private const val UNKNOWN_MODE = ""
 
-        fun newInstanceAddItem() : ShopItemFragment {
-            return ShopItemFragment(MODE_ADD)
+        fun newInstanceAddItem(): ShopItemFragment {
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply { putString(SCREEN_MODE, MODE_ADD) }
+            }
+
         }
 
-        fun newInstanceEditItem(shopItemId: Int) : ShopItemFragment {
-            return ShopItemFragment(MODE_EDIT, shopItemId)
-        }
-
-
-        fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
-            return intent
-        }
-
-
-        fun newIntentEditItem(context: Context, shopItemId: Int): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)
-            intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
-            return intent
+        fun newInstanceEditItem(shopItemId: Int): ShopItemFragment {
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SCREEN_MODE, MODE_EDIT)
+                    putInt(SHOP_ITEM_ID, shopItemId)
+                }
+            }
         }
 
 
