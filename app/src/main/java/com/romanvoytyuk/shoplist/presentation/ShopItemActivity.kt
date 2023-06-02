@@ -4,12 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.Button
-import android.widget.EditText
-import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputLayout
 import com.romanvoytyuk.shoplist.R
 import com.romanvoytyuk.shoplist.domain.ShopItem
 
@@ -24,20 +18,21 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.shop_item_activity)
         parsIntent()
-        setScreenMode()
+        if(savedInstanceState == null ) {
+            launchRightMode()
+        }
+
     }
 
-    private fun setScreenMode() {
+    private fun launchRightMode() {
         val fragment = when (screenMode) {
             MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
             MODE_ADD -> ShopItemFragment.newInstanceAddItem()
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
         supportFragmentManager.apply {
-            popBackStack()
             beginTransaction()
                 .replace(R.id.shop_item_container, fragment)
-                .addToBackStack(null)
                 .commit()
         }
     }
