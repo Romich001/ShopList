@@ -7,18 +7,18 @@ import android.os.Bundle
 import android.widget.Toast
 import com.romanvoytyuk.shoplist.R
 import com.romanvoytyuk.shoplist.domain.ShopItem
+import com.romanvoytyuk.shoplist.presentation.ShopItemFragment.OnEditingFinishedListener
 
-class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
-
+class ShopItemActivity : AppCompatActivity(), OnEditingFinishedListener {
 
     private var screenMode = UNKNOWN_MODE
     private var shopItemId = ShopItem.UNDEFINED_ID
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.shop_item_activity)
+        setContentView(R.layout.activity_shop_item)
         parsIntent()
+        launchRightMode()
         if (savedInstanceState == null) {
             launchRightMode()
         }
