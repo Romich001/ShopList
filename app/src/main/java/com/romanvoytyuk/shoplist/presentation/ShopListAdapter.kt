@@ -1,12 +1,14 @@
 package com.romanvoytyuk.shoplist.presentation
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.romanvoytyuk.shoplist.R
+import com.romanvoytyuk.shoplist.databinding.DisenableShopItemBinding
+import com.romanvoytyuk.shoplist.databinding.EnableShopItemBinding
 import com.romanvoytyuk.shoplist.domain.ShopItem
 
 class ShopListAdapter :
@@ -16,33 +18,44 @@ class ShopListAdapter :
     var shopItemClick: ((ShopItem) -> Unit)? = null
 
 
-    class ShopItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        val tvName = view.findViewById<TextView>(R.id.tv_name)
-        val tvCount = view.findViewById<TextView>(R.id.tv_count)
-
-    }
+    class ShopItemViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         return ShopItemViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(viewType, parent, false)
+            DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                viewType,
+                parent,
+                false
+            )
         )
+
     }
 
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = currentList[position]
-
-        holder.tvName.text = shopItem.name
-        holder.tvCount.text = shopItem.price.toString()
-        holder.itemView.setOnLongClickListener {
+        val binding = holder.binding
+        binding.root.setOnLongClickListener {
             shopItemLongClick?.invoke(shopItem)
             true
         }
-        holder.itemView.setOnClickListener {
+        binding.root.setOnClickListener {
             shopItemClick?.invoke(shopItem)
         }
+
+        when(binding) {
+            is DisenableShopItemBinding -> {
+                binding.tvName.text = shopItem.name
+                binding.tvCount.text = shopItem.price.toString()
+            }
+            is EnableShopItemBinding -> {
+                binding.tvName.text = shopItem.name
+                binding.tvCount.text = shopItem.price.toString()
+            }
+        }
+
+
     }
 
     override fun getItemViewType(position: Int): Int {
