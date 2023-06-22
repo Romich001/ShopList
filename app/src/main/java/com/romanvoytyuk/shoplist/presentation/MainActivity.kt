@@ -3,13 +3,14 @@ package com.romanvoytyuk.shoplist.presentation
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.romanvoytyuk.shoplist.R
+import com.romanvoytyuk.shoplist.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
@@ -17,19 +18,25 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
     private var fragmentContainer: FragmentContainerView? = null
+    private lateinit var binding: ActivityMainBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setupRecyclerView()
-        fragmentContainer = findViewById(R.id.shop_item_container)
+        fragmentContainer = binding.shopItemContainer
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.listOfShopItem.observe(this) {
             shopListAdapter.submitList(it)
         }
-        val addButton = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
-        addButton.setOnClickListener {
+        addButtonOnClick()
+
+    }
+
+    private fun addButtonOnClick() {
+
+        binding.buttonAddShopItem.setOnClickListener {
             if (isOnOnePane()) {
                 val intent = ShopItemActivity.newIntentAddItem(this)
                 startActivity(intent)
@@ -38,7 +45,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             }
 
         }
-
     }
 
     override fun onEditingFinished() {
@@ -62,7 +68,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun setupRecyclerView() {
-        val rv = findViewById<RecyclerView>(R.id.rv_shop_list)
+
+        val rv = binding.rvShopList
         with(rv) {
             shopListAdapter = ShopListAdapter()
             adapter = shopListAdapter
@@ -123,4 +130,5 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             viewModel.changeEnableState(it)
         }
     }
+
 }
