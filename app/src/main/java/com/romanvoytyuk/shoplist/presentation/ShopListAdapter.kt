@@ -44,14 +44,13 @@ class ShopListAdapter :
             shopItemClick?.invoke(shopItem)
         }
 
-        when(binding) {
+        when (binding) {
             is DisenableShopItemBinding -> {
-                binding.tvName.text = shopItem.name
-                binding.tvCount.text = shopItem.price.toString()
+                binding.shopItem = shopItem
             }
+
             is EnableShopItemBinding -> {
-                binding.tvName.text = shopItem.name
-                binding.tvCount.text = shopItem.price.toString()
+                binding.shopItem = shopItem
             }
         }
 
