@@ -1,53 +1,41 @@
 package com.romanvoytyuk.shoplist.data
 
+import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import com.romanvoytyuk.shoplist.domain.ShopItem
 import com.romanvoytyuk.shoplist.domain.ShopListRepository
-import kotlin.random.Random
 
-object ShopListRepositoryImp : ShopListRepository {
+class ShopListRepositoryImp(
+    application: Application
+) : ShopListRepository {
 
-    private val shopItemList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
-    private val shopItemListLD = MutableLiveData<List<ShopItem>>()
-    private var autoIncrementId = 0
+    private val shopListDao = AppDataBase.getInstance(application).getShopListDao()
+    private val mapper = ShopListMapper()
 
-    init {
-        repeat(10) {
-            addShopItem(ShopItem("name$it", it, Random.nextBoolean()))
-        }
-    }
 
-    override fun getShopItem(id: Int): ShopItem {
-        return shopItemList.find { it.id == id } ?: throw RuntimeException("wrong id")
+    override suspend fun getShopItem(id: Int): ShopItem {
+        return mapper.mapShopItemDbToEntity(
+            shopListDao.getShopItem(id)
+        )
     }
 
 
-    override fun deleteShopItem(shopItem: ShopItem) {
-        shopItemList.remove(shopItem)
-        updateShopItemList()
+    override suspend fun deleteShopItem(shopItem: ShopItem) {
+        shopListDao.deleteShopItem(shopItem.id)
     }
 
-    override fun editShopItem(shopItem: ShopItem) {
-        val oldElement = getShopItem(shopItem.id)
-        shopItemList.remove(oldElement)
-        shopItemList.add(shopItem)
-        updateShopItemList()
+    override suspend fun editShopItem(shopItem: ShopItem) {
+        shopListDao.addShopItem(mapper.mapEntityToShopItemDb(shopItem))
     }
 
-    override fun getShopItemList(): LiveData<List<ShopItem>> {
-        return shopItemListLD
+    override fun getShopItemList(): LiveData<List<ShopItem>> = shopListDao.getShopItemList().map {
+        mapper.mapListShopListDbToListShopItem(it)
+
     }
 
-    override fun addShopItem(shopItem: ShopItem) {
-        if (shopItem.id == ShopItem.UNDEFINED_ID) {
-            shopItem.id = autoIncrementId++
-        }
-        shopItemList.add(shopItem)
-        updateShopItemList()
+    override suspend fun addShopItem(shopItem: ShopItem) {
+        shopListDao.addShopItem(mapper.mapEntityToShopItemDb(shopItem))
     }
 
-    private fun updateShopItemList() {
-        shopItemListLD.value = shopItemList.toList()
-    }
 }
