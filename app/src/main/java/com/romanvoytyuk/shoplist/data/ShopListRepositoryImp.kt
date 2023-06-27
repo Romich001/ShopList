@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.romanvoytyuk.shoplist.domain.ShopItem
 import com.romanvoytyuk.shoplist.domain.ShopListRepository
-import kotlin.random.Random
 
 class ShopListRepositoryImp(
     application: Application
@@ -14,11 +13,6 @@ class ShopListRepositoryImp(
     private val shopListDao = AppDataBase.getInstance(application).getShopListDao()
     private val mapper = ShopListMapper()
 
-    init {
-        repeat(10) {
-            addShopItem(ShopItem("name$it", it, Random.nextBoolean()))
-        }
-    }
 
     override fun getShopItem(id: Int): ShopItem {
         return mapper.mapShopItemDbToEntity(
