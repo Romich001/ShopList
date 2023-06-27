@@ -2,11 +2,13 @@ package com.romanvoytyuk.shoplist.presentation
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.romanvoytyuk.shoplist.data.ShopListRepositoryImp
 import com.romanvoytyuk.shoplist.domain.DeleteShopItemUsageCase
 import com.romanvoytyuk.shoplist.domain.EditShopItemUsageCase
 import com.romanvoytyuk.shoplist.domain.GetShopItemListUsageCase
 import com.romanvoytyuk.shoplist.domain.ShopItem
+import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -18,14 +20,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val listOfShopItem = getShopItemListUsageCase.getShopItemList()
 
-
     fun deleteShopItem(shopItem: ShopItem) {
-        deleteShopItemUsageCase.deleteShopItem(shopItem)
+        viewModelScope.launch {
+            deleteShopItemUsageCase.deleteShopItem(shopItem)
+        }
+
 
     }
 
     fun changeEnableState(shopItem: ShopItem) {
-        editShopItemUsageCase.editShopItem(shopItem.copy(enable = !shopItem.enable))
+        viewModelScope.launch {
+            editShopItemUsageCase.editShopItem(shopItem.copy(enable = !shopItem.enable))
+        }
+
     }
 
 }
